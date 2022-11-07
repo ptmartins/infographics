@@ -2,9 +2,22 @@ const metrics = {
   countries: 0,
   members: {
     total: 0,
-    types: {
-      pis: 100,
-      ji: 12
+    categories: {
+      project_managers: 0,
+      lab_managers: 0,
+      surgeons: 0,
+      soft_engineers: 0,
+      assoc_profs: 0,
+      principal_investigators: 0,
+      pathologists: 0,
+      physicians: 0,
+      computational_biologists: 0,
+      postdoctoral_associates: 0,
+      graduate_students: 0,
+      undergrads: 0,
+      others: 0,
+      research_scientists: 0,
+      research_assistents: 0
     }
   },
   institutes: 0,
