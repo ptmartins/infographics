@@ -1,10 +1,16 @@
 const metrics = {
   countries: 0,
-  members: 0,
+  members: {
+    total: 0,
+    types: {
+      pis: 100,
+      ji: 12
+    }
+  },
   institutes: 0,
-  publications: 112,
+  publications: 118,
   bionetworks: 18,
-  cells: 27328852
+  cells: 27328899
 };
 
 (function() {
@@ -57,21 +63,21 @@ const metrics = {
       height = document.querySelector('.map-center').offsetHeight,
       scale  = ( width < 1.75 * height ? width : height * 1.75)/6.275,
 
-      svg = d3.select('.map-center')
+      map = d3.select('.map-center')
         .append('svg')
         .attr('width', width)
         .attr('height', height),
 
-      g = svg.append('g'),
+      g = map.append('g'),
 
       tooltip = d3.select('.map-center')
         .append('div')
         .attr('class', 'tooltip'),
 
       projection = d3.geoMercator()
-        .center([0,20])          
+        .center([5,25])          
         .scale(scale)                 
-        .translate([ width/2, height/2 ]),
+        .translate([ width/2.8, height/2.2 ]),
 
       /**
        * Cache DOM elements
@@ -98,9 +104,11 @@ const metrics = {
         data.forEach((d) => {
           if(+d.pop !== 0) {
             metrics.countries++;
-            metrics.members += +d.pop;
+            metrics.members.total += +d.pop;
             metrics.institutes += +d.ins;
           }
+
+          console.log(metrics);
         });
 
         renderUI();
@@ -156,7 +164,7 @@ const metrics = {
           .style('opacity', .3)
 
         // Add bubbles
-        svg.selectAll('circle')
+        map.selectAll('circle')
           .data(
             data.sort((a, b) => {
                 return +b - +a  
@@ -182,11 +190,11 @@ const metrics = {
           .on('zoom', function() {
             g.selectAll('path')
               .attr('transform', d3.event.transform);
-            svg.selectAll('circle')
+            map.selectAll('circle')
               .attr('transform', d3.event.transform);
           });
 
-        svg.call(zoom);
+        map.call(zoom);
       };
 
       d3.queue()
