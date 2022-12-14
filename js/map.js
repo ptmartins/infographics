@@ -120,8 +120,6 @@ const metrics = {
             metrics.members.total += +d.pop;
             metrics.institutes += +d.ins;
           }
-
-          console.log(metrics);
         });
 
         renderUI();
@@ -204,7 +202,10 @@ const metrics = {
             g.selectAll('path')
               .attr('transform', d3.event.transform);
             map.selectAll('circle')
-              .attr('transform', d3.event.transform);
+              .attr('transform', d3.event.transform)
+              .attr('r', function(d, i) {
+                return size(+d.ins) / d3.event.transform.k;
+              });
           });
 
         map.call(zoom);
