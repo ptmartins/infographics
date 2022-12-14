@@ -139,7 +139,7 @@ const metrics = {
         tooltip
           .html(`<h1> ${d.ins} </h1>`)
           .style('left', (d3.event.x - 30) + 'px')
-          .style('top', (d3.event.y - 260) + 'px')
+          .style('top', (d3.event.y - 150) + 'px')
       },
 
       /**
