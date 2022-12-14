@@ -138,8 +138,8 @@ const metrics = {
       mousemove = (d) => {
         tooltip
           .html(`<h1> ${d.ins} </h1>`)
-          .style('left', (d3.mouse(d3.event.currentTarget)[0]+10) + 'px')
-          .style('top', (d3.mouse(d3.event.currentTarget)[1]) + 'px')
+          .style('left', (d3.event.x - 30) + 'px')
+          .style('top', (d3.event.y - 260) + 'px')
       },
 
       /**
@@ -193,7 +193,7 @@ const metrics = {
             .attr('fill-opacity', .9)
             .attr('class', 'bubble')
           .on('mouseover', mouseover.bind(this))
-          .on('mousemove', mousemove)
+          .on('mousemove', mousemove.bind(this))
           .on('mouseleave', mouseleave);
 
         var zoom = d3.zoom()

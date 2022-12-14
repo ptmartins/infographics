@@ -109,7 +109,7 @@ svg {
 /* Dashboard */
 .dashboard {
   display: grid;
-  gap: .75rem;
+  gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(calc(300px - .75rem), 4fr));
   grid-template-rows: 80px 35% 35%; 
   height: 100%;
@@ -121,16 +121,11 @@ svg {
   grid-column-end: 4;
   grid-row-start: 2;
   grid-row-end: 4;
+  margin-top: 1.5rem;
 }
 
 
 /* Metrics */
-.metrics__header {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
 .metrics {
   margin-left: 12%;
   padding: 0 12%;
@@ -167,8 +162,15 @@ svg {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   margin-bottom: .375rem;
   opacity: .7;
+}
+
+.metrics__body {
+  text-align: center;
 }
 
 .metrics__icon {
