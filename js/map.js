@@ -75,6 +75,9 @@ const metrics = {
       width  = document.querySelector('.map-center').offsetWidth,
       height = document.querySelector('.map-center').offsetHeight,
       scale  = ( width < 1.75 * height ? width : height * 1.75)/6.275,
+      nodes = [],
+      cluster = null,
+      mapEl = document.querySelector('.map-center'),
 
       map = d3.select('.map-center')
         .append('svg')
@@ -136,17 +139,60 @@ const metrics = {
        * Mousemove behaviour
        */
       mousemove = (d) => {
+
+        console.log(mapEl.getBoundingClientRect().top);
+
         tooltip
           .html(`<h1> ${d.ins} </h1>`)
-          .style('left', (d3.event.x - 30) + 'px')
-          .style('top', (d3.event.y - 150) + 'px')
+          .style('left', (d3.event.x - mapEl.getBoundingClientRect().left) + 'px')
+          .style('top', (d3.event.y - mapEl.getBoundingClientRect().top) + 'px')
       },
 
       /**
        * Mouseleave behaviour
        */
-      mouseleave = function(d) {
+      mouseleave = (d) => {
         tooltip.style('opacity', 0)
+      },
+
+      createNodes = (data) => {
+
+        data.forEach((d) => {
+
+          if(d.pop > 0) {
+            let node = {};
+
+            node.lat= +d.lat;
+            node.lng = +d.lng;
+            node.r = +d.ins;
+            node.ins = +d.ins;
+            node.fill = '#172984';
+            node.fillOpacity = .9;
+            node.class = 'bubble';  
+    
+            nodes.push(node);
+          }
+        });
+
+        cluster = d3.cluster()
+          .nodes(nodes);
+      },
+
+      drawBubbles = (nodes, size) => {
+
+        map.selectAll('circle')
+          .data(nodes)
+          .enter()
+          .append('circle')
+            .attr('cx', d => projection([d.lng, d.lat])[0])
+            .attr('cy', d => projection([d.lng, d.lat])[1])
+            .attr('r', d => size(d.r))
+            .style('fill', d => d.fill)
+            .attr('fill-opacity', d => d.fillOpacity)
+            .attr('class', d => d.class)
+          .on('mouseover', mouseover.bind(this))
+          .on('mousemove', mousemove)
+          .on('mouseleave', mouseleave);
       },
 
       /**
@@ -156,6 +202,7 @@ const metrics = {
 
         cacheDOM();
         computeMetrics(data);
+        createNodes(data);
 
         let valueExtent = d3.extent(data, d => +d.ins),
             size = d3.scaleSqrt()
@@ -175,30 +222,12 @@ const metrics = {
           .style('opacity', .3)
 
         // Add bubbles
-        map.selectAll('circle')
-          .data(
-            data.sort((a, b) => {
-                return +b - +a  
-              })
-              .filter((d, i) => {
-                return d.pop > 0  // only show countries with members
-              })
-          )
-          .enter()
-          .append('circle')
-            .attr('cx', d => projection([+d.lng, +d.lat])[0])
-            .attr('cy', d => projection([+d.lng, +d.lat])[1])
-            .attr('r', d => size(+d.ins))
-            .style('fill', '#172984')
-            .attr('fill-opacity', .9)
-            .attr('class', 'bubble')
-          .on('mouseover', mouseover.bind(this))
-          .on('mousemove', mousemove.bind(this))
-          .on('mouseleave', mouseleave);
+        drawBubbles(nodes, size);
 
         var zoom = d3.zoom()
           .scaleExtent([1, 8])
           .on('zoom', function() {
+
             g.selectAll('path')
               .attr('transform', d3.event.transform);
             map.selectAll('circle')
@@ -206,6 +235,11 @@ const metrics = {
               .attr('r', function(d, i) {
                 return size(+d.ins) / d3.event.transform.k;
               });
+
+              cluster.stop();
+              cluster.nodes(nodes)
+                .alpha(1)
+                .restart();
           });
 
         map.call(zoom);

@@ -262,4 +262,4 @@ exports.cluster = simulation;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-})));cluster
+})));
