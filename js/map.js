@@ -139,11 +139,8 @@ const metrics = {
        * Mousemove behaviour
        */
       mousemove = (d) => {
-
-        console.log(mapEl.getBoundingClientRect().top);
-
         tooltip
-          .html(`<h1> ${d.ins} </h1>`)
+          .html(`<h1> ${d.country} </h1>`)
           .style('left', (d3.event.x - mapEl.getBoundingClientRect().left) + 'px')
           .style('top', (d3.event.y - mapEl.getBoundingClientRect().top) + 'px')
       },
@@ -164,10 +161,11 @@ const metrics = {
 
             node.lat= +d.lat;
             node.lng = +d.lng;
-            node.r = +d.ins;
-            node.ins = +d.ins;
+            node.r = +d.pop;
+            node.pop = +d.pop;
             node.fill = '#172984';
             node.fillOpacity = .9;
+            node.country = d.id;
             node.class = 'bubble';  
     
             nodes.push(node);
@@ -175,7 +173,8 @@ const metrics = {
         });
 
         cluster = d3.cluster()
-          .nodes(nodes);
+          .nodes(nodes)
+          .on('tick', () => console.log('tick'));
       },
 
       drawBubbles = (nodes, size) => {
@@ -193,6 +192,20 @@ const metrics = {
           .on('mouseover', mouseover.bind(this))
           .on('mousemove', mousemove)
           .on('mouseleave', mouseleave);
+
+          // Show numebr of members inside each bubble
+          map.selectAll('text')
+            .data(nodes)
+            .enter()
+            .append('text')
+              .attr('x', d => projection([d.lng, d.lat])[0])
+              .attr('y', d => projection([d.lng, d.lat])[1])
+              .attr('dy', '.2em')
+              .attr('class', 'bubble-text')
+              .attr('text-anchor', 'middle')
+              .style('fill', '#ffffff')
+              .text(d => d.pop);
+         
       },
 
       /**
@@ -233,7 +246,12 @@ const metrics = {
             map.selectAll('circle')
               .attr('transform', d3.event.transform)
               .attr('r', function(d, i) {
-                return size(+d.ins) / d3.event.transform.k;
+                return size(+d.pop) / d3.event.transform.k;
+              });
+            map.selectAll('.bubble-text')
+              .attr('transform', d3.event.transform)
+              .attr('dy', function(d, i) {
+                return size(0.1) / d3.event.transform.k + 'em';
               });
 
               cluster.stop();
